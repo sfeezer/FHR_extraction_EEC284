@@ -1,4 +1,4 @@
-# FHR_extraction_EEC294
+# FHR_extraction_EEC284
 Implementation and evaluation of, and experiments on Multi-Detector Heart Rate Extraction Method for Transabdominal Fetal Pulse Oximetry (2021)
 
 tested with:
