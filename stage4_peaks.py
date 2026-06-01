@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from scipy.signal import find_peaks
 
 def extract_fhr_tracks(psd_results, bpm_min=110, bpm_max=270):
     """
@@ -27,6 +28,7 @@ def extract_fhr_tracks(psd_results, bpm_min=110, bpm_max=270):
         for wl in window_psd_data:
             for det in window_psd_data[wl]:
                 freqs, psd = window_psd_data[wl][det]
+                peak_bpm = np.nan
                 
                 # Convert frequencies to BPM
                 bpms = freqs * 60
@@ -39,13 +41,9 @@ def extract_fhr_tracks(psd_results, bpm_min=110, bpm_max=270):
                     valid_bpms = bpms[mask]
                     valid_psd = psd[mask]
                     
-                    # Find index of maximum power density
-                    peak_idx = np.argmax(valid_psd)
-                    
-                    # Extract peak BPM
-                    peak_bpm = valid_bpms[peak_idx]
-                else:
-                    peak_bpm = np.nan
+                    peaks, properties = find_peaks(valid_psd, prominence=valid_psd.max() * 0.10)
+                    if peaks.size > 0:
+                        peak_bpm = valid_bpms[peaks[np.argmax(properties["prominences"])]]
                 
                 # Use a consistent column naming scheme
                 col_name = f"{det}_{wl}"
