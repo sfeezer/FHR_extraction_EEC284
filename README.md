@@ -2,7 +2,7 @@
 
 This repository implements a multi-stage digital signal processing pipeline for extracting Fetal Heart Rate (FHR) from Transabdominal Pulse Oximetry (TFO) data. The methodology is based on the 2021 paper: *"Multi-Detector Heart Rate Extraction Method for Transabdominal Fetal Pulse Oximetry"* (Kasap et al.). It was implemented by Shawn Feezer and Anusheel Nand with support from the Gemini and Claude LLM tools. 
 
-## 🚀 Pipeline Overview
+##  Pipeline Overview
 
 The extraction process is divided into five distinct stages to move from raw, noise-heavy electrical signals to a clean, fused heart rate estimate.
 
@@ -14,7 +14,7 @@ The extraction process is divided into five distinct stages to move from raw, no
 
 ---
 
-## 🛠️ Usage
+##  Usage
 
 The master script `eec284.py` orchestrates the entire pipeline via a CLI.
 
@@ -32,7 +32,7 @@ Mid-execution stage graphs can be manually toggled to true in `eec284.py` stage 
 
 ---
 
-## 🎛️ Tunable Parameters
+##  Tunable Parameters
 
 The system is highly configurable via CLI arguments:
 
@@ -53,7 +53,7 @@ The system is highly configurable via CLI arguments:
 
 ---
 
-## 📂 File Directory
+##  File Directory
 
 ### Core Pipeline
 *   **`eec284.py`**: The main entry point. Handles CLI parsing, data loading, and stage coordination.
@@ -72,7 +72,7 @@ The system is highly configurable via CLI arguments:
 
 ---
 
-## 📊 Validation
+##  Validation
 The pipeline is validated against **1Hz Ground Truth hemodynamics** (the true fetal heart rate). After execution, the tool prints:
 *   **MAE (Mean Absolute Error)**: Average BPM deviation.
 *   **RMSE (Root Mean Squared Error)**: Accuracy metric that penalizes large tracking errors.
