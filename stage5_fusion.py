@@ -1,10 +1,10 @@
+# this file combines weighted individual channel BPMs into final estimation
 import numpy as np
 import pandas as pd
 
+# computes the weighted median of the set of BPMs
 def weighted_median(values, weights):
-    """
-    Computes the weighted median of a set of values.
-    """
+
     if len(values) == 0:
         return np.nan
     
@@ -22,25 +22,21 @@ def weighted_median(values, weights):
     
     return sorted_values[median_idx]
 
-def fuse_fhr_tracks(fhr_tracks_df, mad_thresh=3.0):
-    """
-    Fuses multiple FHR tracks into a single estimate using weighted MAD outlier rejection.
-    
-    Weights (from 2021 Paper):
-    ch2: 1
-    ch3: 3
-    ch4: 2
-    ch5: 2
-    """
+# main management function for stage 5.
+def fuse_fhr_tracks(fhr_tracks_df, mad_thresh=3.0, custom_weights=None):
+
     print(f"Stage 5: Sensor Fusion (MAD Threshold: {mad_thresh})")
     
     # Define weights per detector
-    detector_weights = {
-        'ch2': 1,
-        'ch3': 3,
-        'ch4': 2,
-        'ch5': 2
-    }
+    if custom_weights is not None:
+        detector_weights = custom_weights
+    else:
+        detector_weights = {
+            'ch2': 1,
+            'ch3': 3,
+            'ch4': 2,
+            'ch5': 2
+        }
     
     fused_results = []
     
@@ -64,38 +60,35 @@ def fuse_fhr_tracks(fhr_tracks_df, mad_thresh=3.0):
         values = np.array(values)
         weights = np.array(weights)
         
-        # 1. Calculate Weighted Median
+        # Calculate Weighted Median
         w_median = weighted_median(values, weights)
         
-        # 2. Calculate Median Absolute Deviation (MAD)
-        # Using the weighted median for MAD calculation as well
+        # Calculate MAD using the weighted median 
         ad = np.abs(values - w_median)
         mad = weighted_median(ad, weights)
         
-        # Avoid division by zero if MAD is 0
+        # NaN protection
         if mad == 0:
             mad = 1e-6
             
-        # 3. Outlier Rejection
+        # Outlier rejection
         mask = ad <= (mad_thresh * mad)
         
         valid_values = values[mask]
         valid_weights = weights[mask]
         
         if len(valid_values) == 0:
-            # If all are outliers, fall back to weighted median
+            # If all outliers, fall back to weighted median
             fused_results.append(w_median)
         else:
-            # 4. Weighted Mean of valid estimates
+            # ow calculate fusion and return
             w_mean = np.sum(valid_values * valid_weights) / np.sum(valid_weights)
             fused_results.append(w_mean)
             
     return pd.Series(fused_results, name="fused_fhr")
 
+# MAE and RMSE cacluations
 def calculate_metrics(estimated_fhr, reference_fhr):
-    """
-    Calculates MAE and RMSE between estimated and reference FHR.
-    """
     # Remove NaN values from both
     mask = ~np.isnan(estimated_fhr) & ~np.isnan(reference_fhr)
     y_est = estimated_fhr[mask]

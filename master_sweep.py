@@ -1,3 +1,6 @@
+# this master sweep file calls all five iterator_*.py sweep experiment files in succession
+# useful for applying full suite to a single PPG set.
+
 import time
 import iterator_stage1
 import iterator_stage2

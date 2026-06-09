@@ -1,3 +1,6 @@
+# This file calls eec284.py with many f_low and f_high values
+# performs a grid sweep to identify trends in parameter tuning
+
 import subprocess
 import re
 import csv
@@ -13,8 +16,7 @@ def run_experiment(f_low, f_high, data_path):
         "--f_low", str(f_low),
         "--f_high", str(f_high)
     ]
-    # Ensure no graphs are popped up during batch run
-    # Note: args.graph defaults to False in eec284.py now
+
     
     print(f"Executing: {' '.join(cmd)}")
     try:

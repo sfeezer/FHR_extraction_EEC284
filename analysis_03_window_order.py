@@ -1,3 +1,5 @@
+# this file analyzes and graphs the results of the iterator_stage3.py file
+# visualizes effects of adjusting window size and yw order
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np

@@ -1,3 +1,7 @@
+# This file calls eec284.py with many window size, overlap, and yule-walker order values
+# performs a grid sweep on wnidow size and yw order to identify trends in parameter tuning
+# preforms basic sweep on overlap param
+
 import subprocess
 import re
 import csv
