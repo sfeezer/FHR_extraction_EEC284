@@ -1,30 +1,26 @@
+# This helper file implements the stage 1 bandpass filter
+
 import numpy as np
 import pandas as pd
 from scipy.signal import butter, filtfilt
 from plotting import plot_stage1_validation
 
+# butterworth filter function
 def butter_bandpass(lowcut, highcut, fs, order=4):
-    """
-    Creates a Butterworth bandpass filter.
-    """
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
     b, a = butter(order, [low, high], btype='band')
     return b, a
 
+# apply filter to data set
 def apply_filter(data, lowcut, highcut, fs, order=4):
-    """
-    Applies a zero-phase Butterworth bandpass filter to the data.
-    """
     b, a = butter_bandpass(lowcut, highcut, fs, order=order)
     y = filtfilt(b, a, data)
     return y
 
+# main management function for stage 1.
 def preprocess_data(ppg_df, f_low, f_high, fs=80, graph=False):
-    """
-    Performs Stage 1 Preprocessing: Bandpass filtering.
-    """
     print(f"Stage 1: Preprocessing (Bandpass {f_low}Hz - {f_high}Hz)")
     
     # Identify signal columns (ch1voltsWL1 to ch5voltsWL2)
@@ -41,6 +37,7 @@ def preprocess_data(ppg_df, f_low, f_high, fs=80, graph=False):
     for col in signal_cols:
         filtered_df[col] = apply_filter(ppg_df[col].values, f_low, f_high, fs)
     
+    # Graph before-after ch3wl2 if user toggled flag
     if graph:
         # Use ch3voltsWL2 as the representative channel for validation
         channel_to_plot = 'ch3voltsWL2'

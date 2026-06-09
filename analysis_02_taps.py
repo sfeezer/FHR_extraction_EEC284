@@ -1,3 +1,5 @@
+# this file analyzes and graphs the results of the iterator_stage2.py file
+# visualizes effects of adjusting tap count
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np

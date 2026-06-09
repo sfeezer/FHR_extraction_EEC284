@@ -1,3 +1,6 @@
+# this file analyzes and graphs the results of the iterator_stage5.py file
+# visualizes effects of adjusting weights
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np

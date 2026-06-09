@@ -1,3 +1,5 @@
+# This file calls eec284.py with 30 randomized weight values to identify trends
+
 import subprocess
 import re
 import csv

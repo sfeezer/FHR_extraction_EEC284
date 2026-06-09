@@ -1,3 +1,7 @@
+# This file calls eec284.py with many taps, lambda and delta values
+# performs a grid sweep on lambda/delta to identify trends in parameter tuning
+# performs basic sweep on tap count
+
 import subprocess
 import re
 import csv
@@ -5,9 +9,6 @@ import os
 import numpy as np
 
 def run_experiment(data_path, taps=100, lam=0.9999, delta=1.0):
-    """
-    Runs eec284.py with specific RLS parameters and parses the output for metrics.
-    """
     cmd = [
         "python", "eec284.py",
         "--data_path", data_path,

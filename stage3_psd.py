@@ -1,13 +1,13 @@
+# This file defines stage 3 PSD estimation behavior.
+
 import numpy as np
 import pandas as pd
 from scipy.linalg import toeplitz, solve
 from scipy.signal import freqz
 from plotting import plot_stage3_psd_bpm
 
+# Computes PSD via yule-walker AR method
 def yule_walker_psd(data, order, fs, nfft=2048):
-    """
-    Computes the Power Spectral Density using the Yule-Walker autoregressive method.
-    """
     n = len(data)
     
     # Remove mean
@@ -42,15 +42,15 @@ def yule_walker_psd(data, order, fs, nfft=2048):
     
     return freqs, psd
 
+# main management function for stage 3.
 def process_stage3(anc_df, window_size=60, window_step=30, fs=80, yw_order=100, graph=False, filtered_df=None):
-    """
-    Segments data and computes PSD for each window using Yule-Walker.
-    """
+
     print(f"Stage 3: PSD Estimation (Yule-Walker, order {yw_order})")
     
     wavelengths = ['WL1', 'WL2']
     detectors = ['ch2', 'ch3', 'ch4', 'ch5']
     
+    # window size setup vars
     samples_per_window = int(window_size * fs)
     samples_per_step = int(window_step * fs)
     total_samples = len(anc_df)
@@ -58,15 +58,17 @@ def process_stage3(anc_df, window_size=60, window_step=30, fs=80, yw_order=100, 
     # Number of windows
     num_windows = (total_samples - samples_per_window) // samples_per_step + 1
     
-    # Results structure: dict mapping window_index -> wavelength -> detector -> (freqs, psd)
     psd_results = {}
     
+    # loop through windows
     for i in range(num_windows):
+        # extract window based on overlap
         start_idx = i * samples_per_step
         end_idx = start_idx + samples_per_window
         window_data = anc_df.iloc[start_idx:end_idx]
         
         window_psd = {}
+        # walk all signals in window and call yule-walker on each
         for wl in wavelengths:
             wl_psd = {}
             for det in detectors:
@@ -82,10 +84,9 @@ def process_stage3(anc_df, window_size=60, window_step=30, fs=80, yw_order=100, 
         if (i + 1) % 10 == 0 or (i + 1) == num_windows:
             print(f"  Processed window {i+1}/{num_windows}")
 
+    # graph ch3wl2 before-after PSD if user toggled flag
     if graph and num_windows > 0:
         from plotting import plot_stage3_comparison
-        # Plot the first window's PSD for a middle detector as validation
-        # ch3voltsWL2 is often used for validation
         val_wl = 'WL2'
         val_det = 'ch3'
         col = f"{val_det}volts{val_wl}"
