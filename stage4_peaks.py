@@ -1,6 +1,7 @@
 # this helper file implements peak selection via argmax
 import numpy as np
 import pandas as pd
+from scipy.signal import find_peaks
 
 def extract_fhr_tracks(psd_results, bpm_min=110, bpm_max=270, helper_mode=False):
 
@@ -23,6 +24,7 @@ def extract_fhr_tracks(psd_results, bpm_min=110, bpm_max=270, helper_mode=False)
                     sensor_state[col_name] = {'seen': False, 'last': 140.0}
 
                 freqs, psd = window_psd_data[wl][det]
+                peak_bpm = np.nan
                 
                 # Convert frequencies to BPM
                 bpms = freqs * 60
@@ -36,16 +38,9 @@ def extract_fhr_tracks(psd_results, bpm_min=110, bpm_max=270, helper_mode=False)
                     valid_bpms = bpms[mask]
                     valid_psd = psd[mask]
                     
-                    # Find index of maximum power density using ARGMAX
-                    peak_idx = np.argmax(valid_psd)
-                    peak_bpm = valid_bpms[peak_idx]
-                    
-                    # Boundary rejection: If the peak is at the very first or last index 
-                    # of our physiological window, it is likely a noise floor/maternal artifact.
-                    if peak_idx == 0 or peak_idx == len(valid_psd) - 1:
-                        found_valid = False
-                    else:
-                        found_valid = True
+                    peaks, properties = find_peaks(valid_psd, prominence=valid_psd.max() * 0.10)
+                    if peaks.size > 0:
+                        peak_bpm = valid_bpms[peaks[np.argmax(properties["prominences"])]]
                 
                 # Lost Signal Handling
                 if helper_mode:
